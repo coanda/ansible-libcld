@@ -1,2 +1,48 @@
 ---
-# tasks file for libcld
+- name: coanda.libcld | Install libcld dependencies
+  package:
+    name:
+      - bison
+      - cmake
+      - flex
+      - gettext
+      - git
+      - python3-pip
+      - vala
+      - libgee-devel
+      - glib2-devel
+      - libxml2-devel
+      - json-glib-devel
+    state: present
+  when: ansible_distribution == 'Fedora'
+  become: yes
+
+- name: coanda.libcld | Install python dependencies
+  pip:
+    name:
+      - scikit-build
+      - meson
+      - ninja
+    executable: pip3
+  become: yes
+
+- name: coanda.libcld | Download libcld repository
+  git:
+    repo: 'https://github.com/geoffjay/libcld.git'
+    dest: /tmp/libcld
+    version: v0.4.7-001
+
+- name: coanda.libcld | Build libcld from source
+  shell: |
+    meson --prefix=/usr _build
+    meson configure -Denable_matheval=false _build
+    ninja -C _build
+    exit 0
+  args:
+    chdir: /tmp/libcld
+
+- name: coanda.libcld | Install libcld
+  shell: ninja -C _build install
+  become: yes
+  args:
+    chdir: /tmp/libcld
