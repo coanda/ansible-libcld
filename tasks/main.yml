@@ -1,5 +1,5 @@
 ---
-- name: coanda.libcld | Install libcld dependencies
+- name: coanda.libcld | Install libcld dependencies (Fedora)
   package:
     name:
       - bison
@@ -17,6 +17,24 @@
   when: ansible_distribution == 'Fedora'
   become: yes
 
+- name: coanda.libcld | Install libcld dependencies (Debian)
+  package:
+    name:
+      - bison
+      - cmake
+      - flex
+      - gettext
+      - git
+      - python3-pip
+      #- valac
+      - libgee-0.8-dev
+      - libglib2.0-dev
+      - libxml2-dev
+      - libjson-glib-dev
+    state: present
+  when: ansible_distribution == 'Debian'
+  become: yes
+
 - name: coanda.libcld | Install python dependencies
   pip:
     name:
@@ -30,7 +48,7 @@
   git:
     repo: 'https://github.com/geoffjay/libcld.git'
     dest: /tmp/libcld
-    version: v0.4.7-001
+    #version: v0.4.7-001
 
 - name: coanda.libcld | Build libcld from source
   shell: |
